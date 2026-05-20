@@ -306,19 +306,28 @@
   }
 
   /* ---------------- Notion table cleanup (header row overlap) ---------------- */
-  /** Unwrap any external/database links inside tables (Notion export rows). */
+  /** Unwrap any hyperlink inside tables (Notion database export rows). */
   function neutralizeNotionTableLinks() {
     $$('.content table a[href]').forEach((a) => {
       const href = (a.getAttribute('href') || '').trim();
       if (!href || href.startsWith('#')) return;
-      if (href.startsWith('./') || href.startsWith('../') || href.startsWith('/')) return;
-      if (!/^https?:\/\//i.test(href)) return;
       const span = document.createElement('span');
       span.className = 'gea-table-text';
       span.innerHTML = a.innerHTML;
       a.replaceWith(span);
     });
   }
+
+  // Run immediately — do not wait for idle callback (table links must not be clickable).
+  neutralizeNotionTableLinks();
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest?.('.content table a[href]');
+    if (!link) return;
+    const href = (link.getAttribute('href') || '').trim();
+    if (!href || href.startsWith('#')) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }, true);
 
   function normalizeNotionTables() {
     neutralizeNotionTableLinks();

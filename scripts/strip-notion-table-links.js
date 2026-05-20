@@ -6,8 +6,7 @@ const path = require('path');
 const htmlPath = path.join(__dirname, '..', 'index.html');
 let html = fs.readFileSync(htmlPath, 'utf8');
 
-const linkRe =
-  /<a\b[^>]*\bhref="https?:\/\/[^"]*"[^>]*>([\s\S]*?)<\/a>/gi;
+const linkRe = /<a\b[^>]*>([\s\S]*?)<\/a>/gi;
 
 let count = 0;
 const tableRe = /<table\b[\s\S]*?<\/table>/gi;
