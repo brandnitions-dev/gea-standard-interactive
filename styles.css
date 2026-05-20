@@ -1881,11 +1881,23 @@ body {
   background: color-mix(in srgb, var(--bg-elev) 45%, var(--surface));
 }
 
+/* Table cells: plain text only (no Notion / database hyperlinks) */
+.content table .cell-title,
+.content table .cell-title .gea-table-text,
+.content table .gea-table-text {
+  color: var(--text) !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  cursor: default;
+}
+
+.content table a,
 .content table .cell-title a {
-  color: var(--link);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: inherit !important;
+  font-weight: inherit;
+  text-decoration: none !important;
+  pointer-events: none !important;
+  cursor: default !important;
 }
 
 /* Mobile nav — burger + slide-out TOC */

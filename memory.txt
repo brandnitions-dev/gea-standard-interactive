@@ -30,9 +30,18 @@ HOW TO OPEN / TEST
 CURRENT CACHE BUST
 ------------------
 index.html links:
-  styles.css?v=19
-  app.js?v=19
+  styles.css?v=21
+  app.js?v=21
 Bump ?v=N on both when changing CSS/JS so browsers reload.
+
+NOTION TABLE LINKS (fixed 2026-05-20, pushed after user report)
+--------------------------------------------------------------
+- Notion DB export had 60 <a href="https://www.notion.so/..."> inside <table> cells
+- scripts/strip-notion-table-links.js rewrites them to <span class="gea-table-text">
+- app.js neutralizeNotionTableLinks() unwraps any https table link on load
+- build_site.py step 5 does same on rebuild
+- CSS: .cell-title / .gea-table-text plain text, no green underline
+- GIT: this fix was NOT on origin until commit after user said links still worked — always git push after fixes
 
 KEY FILES
 ---------

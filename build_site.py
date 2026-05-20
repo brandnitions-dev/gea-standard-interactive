@@ -116,7 +116,23 @@ for h in article.find_all(['h1','h2','h3','h4','h5','h6']):
         cls.append('gea-heading')
         h['class'] = cls
 
-# 5. Wrap every <table> in a responsive scroll container (do not modify table itself)
+# 5. Unwrap Notion database links inside tables (keep visible text only)
+for table in article.find_all('table'):
+    for a in table.find_all('a', href=True):
+        href = a.get('href', '')
+        if href.startswith(('http://', 'https://')) and not href.startswith('#'):
+            a.name = 'span'
+            cls = a.get('class', [])
+            if 'gea-table-text' not in cls:
+                cls.append('gea-table-text')
+                a['class'] = cls
+            del a['href']
+            if a.has_attr('target'):
+                del a['target']
+            if a.has_attr('rel'):
+                del a['rel']
+
+# 6. Wrap every <table> in a responsive scroll container (do not modify table itself)
 for table in article.find_all('table'):
     # already wrapped?
     parent = table.parent
