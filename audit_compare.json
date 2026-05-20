@@ -1,0 +1,32 @@
+{
+  "source": {
+    "headings": 165,
+    "paragraphs": 241,
+    "images": 142,
+    "tables": 10,
+    "ul": 195,
+    "ol": 252,
+    "li": 447,
+    "links": 225,
+    "words": 21330,
+    "chars": 164826,
+    "sha256": "90da1c5725d828fad387b3d3a1c4b153bde6edf23f9d9c4547390d351641652b"
+  },
+  "built": {
+    "headings": 165,
+    "paragraphs": 241,
+    "images": 142,
+    "tables": 10,
+    "ul": 195,
+    "ol": 252,
+    "li": 447,
+    "links": 225,
+    "words": 21330,
+    "chars": 164826,
+    "sha256": "90da1c5725d828fad387b3d3a1c4b153bde6edf23f9d9c4547390d351641652b"
+  },
+  "headings_equal": true,
+  "tables_equal": true,
+  "images_equal": true,
+  "links_equal": true
+}
