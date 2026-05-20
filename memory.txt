@@ -1,0 +1,147 @@
+GEA STANDARD INTERACTIVE — SESSION MEMORY
+=========================================
+Last updated: 2026-05-20
+Purpose: Handoff for the next agent/session so work can continue without re-discovering context.
+
+WHERE THIS PROJECT LIVES
+------------------------
+Local folder (USE THIS — not an old zip):
+  c:\Users\xheih\OneDrive\Desktop\mosskyn terminal business model\geastandardv2\GEA STANDARD Interactive\
+
+Private GitHub repo (pushed 2026-05-20):
+  https://github.com/brandnitions-dev/gea-standard-interactive
+  Branch: main
+  Remote: origin
+
+Related (NOT merged yet):
+  Parent workspace: mosskyn terminal business model
+  MOSSKYN Business Terminal: separate public repo brandnitions-dev/mosskyn-business-terminal
+  Integration of GEA reader into MOSSKYN terminal was discussed but NOT requested/done.
+
+HOW TO OPEN / TEST
+------------------
+1. Always open: geastandardv2/GEA STANDARD Interactive/index.html (extracted folder).
+2. Prefer local server (file:// can be slow on 536KB index.html):
+     cd "GEA STANDARD Interactive"
+     python -m http.server 5000
+     → http://localhost:5000
+3. Hard refresh after CSS/JS changes: Ctrl+F5 (cache bust query params in index.html).
+
+CURRENT CACHE BUST
+------------------
+index.html links:
+  styles.css?v=19
+  app.js?v=19
+Bump ?v=N on both when changing CSS/JS so browsers reload.
+
+KEY FILES
+---------
+index.html     ~536KB single-file Notion export (all GEA copy + inline TOC block)
+styles.css     Base layout + "Advanced standards-portal redesign" + prose typography
+app.js         Shell only: theme, sidebar TOC, search, scrollspy, enhanceDocumentPresentation,
+               image lightbox, Notion table wrap, callout icon strip
+assets/        PNG diagrams (primary) + legacy SVGs + circle-dot_gray.svg etc. for callouts
+build_site.py  Regenerates index.html from canonical source (paths may need check on Windows)
+scripts/
+  migrate-svg-to-png.js   One-off .svg → .png path swap in HTML
+  analyze-media.js        Figure/layout analysis helper
+
+WHAT WE BUILT / CHANGED (CHRONOLOGICAL SUMMARY)
+-----------------------------------------------
+1. UI shell polish
+   - Full-width layout chain (sidebar + main content, no narrow column)
+   - Sticky left TOC on desktop; burger + backdrop on mobile (<1024px)
+   - Reading progress bar, back-to-top, print button, light/dark theme
+   - Removed Notion yellow highlight styling (mark.highlight-yellow_background → transparent)
+   - Fixed table header overlap (gea-notion-header row, hide property-icon SVGs in th)
+
+2. Document structure (app.js enhanceDocumentPresentation)
+   - Wraps page-body into .gea-chapter-panel (per real H1) and .gea-standard-card (per H2)
+   - .gea-chapter-intro for content before first H2 in a chapter
+   - .doc-cockpit metrics bar inserted before <article> (chapters/sections/tables/images counts)
+   - Prelude junk removed from DOM: empty gray H1, inline Notion TOC nav, empty <p>
+   - Empty H1 hidden via CSS: .content h1.block-color-gray.gea-heading { display: none }
+
+3. Images
+   - Copied replacement PNGs from user Downloads folder into assets/
+   - index.html references .png for main diagrams; inline widths set to width:100%
+   - layoutMediaPerFigure(): ALL lead figures use stack-wide only (3:1 landscape PNGs, full width on top)
+   - GEA-UN_SDGs.png unchanged (not in replacement set)
+   - Old SVGs still in assets/ (optional cleanup: delete unused SVGs)
+
+4. Typography (partial)
+   - .gea-prose on cards/intros: Satoshi/Cabinet stack, 17px body, styled ol.numbered-list / ul.bulleted-list
+   - NOTION LIST GROUPING (normalizeNotionLists) was tried → froze/broke page on huge DOM → REMOVED
+   - Do NOT re-add full-document list merge without batching or build-time step
+
+5. Critical bugs fixed
+   A) Blank main content area
+      - Cause: body.dataset.enhanced = 'true' set BEFORE DOM restructure finished; partial state on freeze
+      - Fix: set enhanced only on success; recovery if enhanced but no .gea-chapter-panel; requestIdleCallback defer
+      - Also: user must hard refresh; open correct folder not stale zip
+
+   B) VERA Dimension sections empty (Overview/Example/Guidance boxes blank)
+      - Cause: CSS hid .callout > div:first-child AFTER JS removed icon column → content div became first-child → hidden
+      - Fix v19: CSS only hides first-child :has(> .icon); JS stripNotionCalloutIcons skips columns with real content
+      - stripVerCycleNoteEmojis() removes leading 📌 from paragraph footnotes
+
+   C) "ChatGPT-ish" callout icons
+      - Notion callouts use left column: emoji (💡🗣️1️⃣2️⃣3️⃣4️⃣📌) or img.icon (circle-dot_gray.svg)
+      - Stripped decoratively; nested VERA callouts in section 12.3.2 must keep text div visible
+
+HTML / DOM NOTES (IMPORTANT FOR FUTURE EDITS)
+---------------------------------------------
+- Sidebar TOC is separate static HTML in index.html (not generated from article).
+- Inline .gea-inline-toc inside page-body is hidden (visibility:hidden) and removed as prelude node.
+- Real chapter H1s: tagName H1 AND textContent.trim() truthy (empty placeholder H1 skipped).
+- Section 12.3.2 VERA per-dimension blocks: nested <figure class="callout"> structure:
+    Outer callout: emoji step (1️⃣ Visualize, 2️⃣ Engage, …)
+    Inner callouts: img circle-dot + Overview / Example / Guidance text
+- Some paragraphs have raw 📌 before "You can refer to the universal VERA Cycle template…"
+- Embedded iframes (geaadmin.github.io) in bounded divs with height 40–70vh — do not break layout
+- index.html includes large window.GEA_HEADINGS JSON + perplexity inline script (only runs in iframe: if window !== window.top return)
+
+CSS ARCHITECTURE (styles.css)
+-----------------------------
+~Line 1–684:    Original tokens + layout + TOC + tables + callouts
+~Line 685+:     Advanced redesign (:root beige/gold theme, --ink hero, .gea-chapter-panel cards)
+~Line 1949+:    .gea-prose typography
+Callouts: display:block; hide decorative icon column only (:has(> .icon))
+
+app.js FLOW (on load)
+---------------------
+requestIdleCallback →
+  enhanceDocumentPresentation()
+  stripNotionCalloutIcons()
+  stripVerCycleNoteEmojis()
+  initImageLightbox()
+  normalizeNotionTables()
++ TOC accordion, scrollspy, search, reading progress, external links target=_blank
+
+KNOWN GOTCHAS
+-------------
+- PowerShell: use ; not && between commands
+- Never set body.dataset.enhanced early — only after successful enhance
+- Never use .callout > div:first-child { display:none } without :has(.icon) qualifier
+- index.html is one giant line for article body — prefer scripts/node for bulk HTML edits
+- file:// works but slow; recommend http.server for QA
+- User may open GEA STANDARD Interactive.zip stale copy — always point to geastandardv2 folder
+
+NOT DONE / OPTIONAL NEXT STEPS
+------------------------------
+[ ] Visual QA all chapters after v19 (especially 12.3.2 Dimensions 1–8, Benefits 11.2, Annex grids)
+[ ] Remove unused SVG assets if PNG-only is final
+[ ] Safe list grouping for Notion one-<li>-per-<ul> pattern (build-time or chunked, not sync full DOM)
+[ ] Integrate into MOSSKYN Business Terminal HTML (user has not requested yet)
+[ ] GitHub Pages or deploy target (not set up)
+[ ] Re-run build_site.py if canonical GEA-STANDARD.html source changes
+
+TRANSCRIPT REFERENCE
+--------------------
+Full chat transcript (parent UUID only):
+  agent-transcripts/c4c19ab4-da7b-4183-996a-83e0733ce52d/c4c19ab4-da7b-4183-996a-83e0733ce52d.jsonl
+
+COMMIT HISTORY (gea-standard-interactive repo)
+----------------------------------------------
+Initial: 7f6d2b6 — portal UI, PNG diagrams, VERA callout fixes (as of push date)
+Local changes after push may exist — run git status before assuming sync.
